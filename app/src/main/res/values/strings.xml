@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">ImageLoader</string>
+  <string name="app_name">ImageLoader</string>
+  <string name="load_next_avatar">Load Next Avatar</string>
 </resources>

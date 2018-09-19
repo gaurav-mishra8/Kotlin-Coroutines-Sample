@@ -1,14 +1,17 @@
 package com.gaurav.imagelib
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import java.io.InputStream
 
 /**
  * This class is responsible for decoding bitmaps efficiently from different sources
  */
-class ImageTransformer {
+class ImageTransformer(val context: Context) {
 
   /**
    * Decodes an inputStream to provide bitmap
@@ -37,10 +40,50 @@ class ImageTransformer {
           }
 
       BitmapFactory.decodeStream(inputStream, null, options)
+      inputStream.reset()
       options.inSampleSize = calculateInSampleSize(options, targetWidth, targetHeight)
       options.inJustDecodeBounds = false
 
       bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+    } catch (e: Exception) {
+      e.printStackTrace()
+    }
+
+    return bitmap
+
+  }
+
+  fun getRoundedBitmap(src: Bitmap): RoundedBitmapDrawable {
+    val res = context.resources
+    val dr = RoundedBitmapDrawableFactory.create(res, src)
+    dr.cornerRadius = Math.max(src.width, src.height) / 2.0f
+    return dr
+  }
+
+  fun decodeByteArray(
+    byteArray: ByteArray?,
+    targetWidth: Int,
+    targetHeight: Int
+  ): Bitmap? {
+
+    if (byteArray == null) {
+      return null
+    }
+
+    var bitmap: Bitmap? = null
+
+    try {
+      val options = BitmapFactory.Options()
+          .apply {
+            inJustDecodeBounds = true
+          }
+
+      BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size, options)
+      options.inSampleSize = calculateInSampleSize(options, targetWidth, targetHeight)
+      options.inJustDecodeBounds = false
+
+      bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size, options)
+
     } catch (e: Exception) {
       e.printStackTrace()
     }

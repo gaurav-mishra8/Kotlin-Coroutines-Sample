@@ -14,8 +14,7 @@ class MainActivity : AppCompatActivity() {
 
   lateinit var mainViewModel: MainViewModel
 
-  val imageUrl =
-    "https://www.google.co.in/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwieoaPPo8LdAhXCposKHT9QAy8QjRx6BAgBEAU&url=http%3A%2F%2Fmybestapizza.com%2F&psig=AOvVaw1uJ0g_EAPonON13FPw6q2J&ust=1537281911559104"
+  val imageUrl = "http://i.imgur.com/DvpvklR.png"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -25,11 +24,10 @@ class MainActivity : AppCompatActivity() {
         .get(MainViewModel::class.java)
 
     tvLoadNext.setOnClickListener {
-
       ImageLoader.get(this)
           .load(imageUrl)
           .setPlaceHolder(R.drawable.ic_launcher_background)
-
+          .into(ivAvatar)
     }
 
   }

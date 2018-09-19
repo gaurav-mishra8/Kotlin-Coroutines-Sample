@@ -1,16 +1,17 @@
 package com.gaurav.imagelib
 
+import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.InputStream
+import kotlin.coroutines.experimental.CoroutineContext
 
 /**
  * Interface to provide result of image loading network request
  */
 interface NetworkResponseCalback {
-  fun onSuccess(inputStream: InputStream)
+  fun onSuccess(byteArray: ByteArray)
 
   fun onError()
 }
@@ -21,34 +22,36 @@ interface NetworkResponseCalback {
  */
 class NetworkDownloader {
 
-  var client = OkHttpClient()
+  fun provideHttpClient() = OkHttpClient()
 
   fun loadUrl(
     url: String,
-    callback: NetworkResponseCalback
+    callback: NetworkResponseCalback?
   ) {
     val request = Request.Builder()
         .url(url)
         .build()
 
-    launch {
-      var inputStream: InputStream? = null
+    val uiContext: CoroutineContext = UI
+
+    launch(uiContext) {
+      var byteArray: ByteArray? = null
 
       val deferred = async {
-        val response = client.newCall(request)
+        val response = provideHttpClient().newCall(request)
             .execute()
         if (response.isSuccessful) {
-          inputStream = response.body()
-              ?.byteStream()
-          return@async inputStream
+          byteArray = response.body()
+              ?.bytes()
+          return@async byteArray
         } else {
-          return@async inputStream
+          return@async byteArray
         }
       }
 
       deferred.await()?.let {
-        callback.onSuccess(it)
-      } ?: callback.onError()
+        callback?.onSuccess(it)
+      } ?: callback?.onError()
 
     }
   }

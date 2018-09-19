@@ -40,7 +40,9 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
   implementation 'com.android.support:support-annotations:27.1.1'
   implementation 'com.squareup.okhttp3:okhttp:3.11.0'
-  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.23.3"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.25.3"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.25.3"
+
 
 
   testImplementation 'junit:junit:4.12'

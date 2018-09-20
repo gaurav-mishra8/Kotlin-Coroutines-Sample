@@ -12,21 +12,27 @@ class MainActivity : AppCompatActivity() {
   val tvLoadNext by lazy { findViewById<TextView>(R.id.tv_next_avatar) }
   val ivAvatar by lazy { findViewById<ImageView>(R.id.iv_avatar) }
 
-  lateinit var mainViewModel: MainViewModel
-
-  val imageUrl = "http://i.imgur.com/DvpvklR.png"
+  val imageArray = arrayOf(
+      "http://i.imgur.com/DvpvklR.png",
+      "https://www.freepngimg.com/download/chair/46-chair-png-image.png",
+      "https://www.freepngimg.com/download/tennis/8-2-tennis-png-picture.png",
+      "http://i.imgur.com/DvpvklR.png",
+      "https://www.freepngimg.com/thumb/pizza/49-pizza-png-image-thumb.png"
+  )
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    mainViewModel = ViewModelProviders.of(this)
-        .get(MainViewModel::class.java)
-
+    var index = 0
     tvLoadNext.setOnClickListener {
-      ImageLoader.get(this)
-          .load(imageUrl)
+      if (index == imageArray.size) {
+        index = 0
+      }
+      ImageLoader.get(applicationContext)
+          .load(imageArray.get(index))
           .into(ivAvatar)
+      index++
     }
 
   }

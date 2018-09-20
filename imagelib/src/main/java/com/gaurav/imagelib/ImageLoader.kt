@@ -47,7 +47,11 @@ class ImageLoader private constructor(val context: Context) {
     imageLoadRequest: ImageLoadRequest,
     callback: ImageLoadingCallback?
   ) {
-    requestHandler.handleRequest(imageLoadRequest, callback)
+    if (isNetworkAvailable(context)) {
+      requestHandler.handleRequest(imageLoadRequest, callback)
+    } else {
+      callback?.onLoadingError("", ImageLoadException("No Network Connected"))
+    }
   }
 
 }

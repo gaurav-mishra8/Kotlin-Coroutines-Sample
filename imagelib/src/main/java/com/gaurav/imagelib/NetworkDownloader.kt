@@ -4,6 +4,7 @@ import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.io.InputStream
 
 /**
  * This class is responsible for making a network call to fetch bitmap image
@@ -31,12 +32,36 @@ class NetworkDownloader {
     val deferred = async {
       val response = provideHttpClient().newCall(request)
           .execute()
-      if (response.isSuccessful) {
+      if (response != null && response.isSuccessful) {
         byteArray = response.body()
             ?.bytes()
-        return@async byteArray
+        byteArray
       } else {
-        return@async byteArray
+        byteArray
+      }
+    }
+    return deferred
+  }
+
+  fun loadUrlStream(
+    url: String
+  ): Deferred<InputStream?> {
+
+    val request = Request.Builder()
+        .url(url)
+        .build()
+
+    var inputStream: InputStream? = null
+
+    val deferred = async {
+      val response = provideHttpClient().newCall(request)
+          .execute()
+      if (response.isSuccessful) {
+        inputStream = response.body()
+            ?.byteStream()
+        return@async inputStream
+      } else {
+        return@async inputStream
       }
     }
     return deferred

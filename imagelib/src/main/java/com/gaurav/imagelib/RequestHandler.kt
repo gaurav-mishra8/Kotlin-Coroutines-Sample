@@ -22,8 +22,10 @@ class RequestHandler(
   val networkDownloader: NetworkDownloader
 ) {
 
+  var isRequestRunning = false
+
   /**
-   * Makes a network call using NetworkDownloader and transforms image bitmap
+   * Fetch bitmap from cache or make a network call if needed using NetworkDownloader and transforms image bitmap
    * @param imageLoadRequest The request data for fetching image from network
    * @param callback a callback to send drawable back to listener
    */
@@ -31,11 +33,16 @@ class RequestHandler(
     imageLoadRequest: ImageLoadRequest,
     callback: ImageLoadingCallback?
   ) {
+
+    if (isRequestRunning) {
+      return
+    }
     val url = imageLoadRequest.uri.toString()
     var bitmap: Bitmap?
 
     // try getting bitmap from cache
     bitmap = imageCache.getImage(url)
+    isRequestRunning = true
 
     try {
       // if bitmap not found in cache make netwrok call
@@ -58,8 +65,12 @@ class RequestHandler(
         callback?.onLoadingSuccess(roundedBitmap)
       }
 
+      bitmap?.recycle()
+
     } catch (e: Exception) {
       callback?.onLoadingError(url, e)
+    } finally {
+      isRequestRunning = false
     }
 
   }

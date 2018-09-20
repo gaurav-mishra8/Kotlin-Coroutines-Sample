@@ -83,6 +83,10 @@ class ImageTransformer(val context: Context) {
       return null
     }
 
+    if (targetHeight == 0 || targetWidth == 0) {
+      return null
+    }
+
     var bitmap: Bitmap? = null
 
     try {

@@ -8,6 +8,6 @@ import android.support.annotation.DrawableRes
  */
 data class ImageLoadRequest(
   val uri: Uri?, @DrawableRes val resId: Int,
-  val reqWidth: Int,
-  val reqHeight: Int
+  val reqWidth: Int?,
+  val reqHeight: Int?
 )

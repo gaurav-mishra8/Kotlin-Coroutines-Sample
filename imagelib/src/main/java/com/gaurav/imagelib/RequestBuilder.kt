@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable
 import android.widget.ImageView
 import com.gaurav.imagelib.R.drawable
+import java.lang.ref.WeakReference
 
 class RequestBuilder(
   val imageLoader: ImageLoader,
@@ -19,7 +20,7 @@ class RequestBuilder(
   private var placeHolderRes: Int = 0
   private var errorRes: Int = 0
   private var placeholderDrawable: Drawable? = null
-  private lateinit var targetView: ImageView
+  private lateinit var targetView: WeakReference<ImageView>
 
   /**
    * A placeholder resource to be shown while image is getting download
@@ -63,23 +64,27 @@ class RequestBuilder(
   }
 
   fun into(imageView: ImageView) {
-    targetView = imageView
+    targetView = WeakReference(imageView)
     val imageLoadRequest = createRequest()
 
     showPlaceHolder()
 
     imageLoader.submitRequest(imageLoadRequest, object : ImageLoadingCallback {
       override fun onLoadingSuccess(drawable: RoundedBitmapDrawable) {
-        targetView.setImageDrawable(drawable)
-        targetView.background = null
+        getTargetView()
+            ?.setImageDrawable(drawable)
+        getTargetView()
+            ?.background = null
       }
 
       override fun onLoadingError(
         url: String,
         exception: Exception
       ) {
-        targetView.setImageResource(R.drawable.ic_error)
-        targetView.background = null
+        getTargetView()
+            ?.setImageResource(R.drawable.ic_error)
+        getTargetView()
+            ?.background = null
       }
     })
   }
@@ -87,19 +92,24 @@ class RequestBuilder(
   private fun showPlaceHolder() {
     val animatedVectorDrawable =
       AnimatedVectorDrawableCompat.create(imageLoader.context, drawable.progress)
-    targetView.background = animatedVectorDrawable
+    getTargetView()
+        ?.background = animatedVectorDrawable
 
-    val animatable = targetView.background as Animatable
+    val animatable = getTargetView()?.background as Animatable
     animatable.start()
     if (placeHolderRes != 0) {
-      targetView.setImageResource(placeHolderRes)
+      getTargetView()
+          ?.setImageResource(placeHolderRes)
     } else {
-      targetView.setImageResource(drawable.ic_placeholder)
+      getTargetView()
+          ?.setImageResource(drawable.ic_placeholder)
     }
   }
 
   private fun createRequest(): ImageLoadRequest {
-    return ImageLoadRequest(uri, resId, targetView.width, targetView.height)
+    return ImageLoadRequest(uri, resId, getTargetView()?.width, getTargetView()?.height)
   }
+
+  private fun getTargetView() = targetView.get()
 
 }

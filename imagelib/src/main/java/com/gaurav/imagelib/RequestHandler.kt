@@ -44,17 +44,17 @@ class RequestHandler(
           val deferred = networkDownloader.loadUrl(url)
           val byteArray = deferred.await()
           bitmap = imageTransformer.decodeByteArray(
-              byteArray, imageLoadRequest.reqWidth, imageLoadRequest.reqHeight
+              byteArray, imageLoadRequest.reqWidth ?: 0, imageLoadRequest.reqHeight ?: 0
           )
 
           bitmap?.let {
-            val roundedBitmap = imageTransformer.getRoundedBitmap(bitmap!!)
+            val roundedBitmap = getRoundedBitmap(bitmap!!)
             imageCache.putImage(url, it)
             callback?.onLoadingSuccess(roundedBitmap)
           } ?: callback?.onLoadingError(url, ImageLoadException("Error processing bitmap"))
         }
       } else {
-        val roundedBitmap = imageTransformer.getRoundedBitmap(bitmap!!)
+        val roundedBitmap = getRoundedBitmap(bitmap!!)
         callback?.onLoadingSuccess(roundedBitmap)
       }
 
@@ -64,4 +64,6 @@ class RequestHandler(
 
   }
 
+  private fun getRoundedBitmap(bitmap: Bitmap) =
+    imageTransformer.getRoundedBitmap(bitmap)
 }

@@ -1,13 +1,11 @@
 <animated-vector
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="NewApi">
+    >
 
   <aapt:attr name="android:drawable">
     <vector
         android:height="100dp"
-        android:tint="?attr/colorControlActivated"
         android:viewportHeight="48"
         android:viewportWidth="48"
         android:width="100dp">

@@ -91,7 +91,7 @@ class RequestBuilder(
 
   private fun showPlaceHolder() {
     val animatedVectorDrawable =
-      AnimatedVectorDrawableCompat.create(imageLoader.context, drawable.progress)
+      AnimatedVectorDrawableCompat.create(imageLoader.context, R.drawable.progress)
     getTargetView()
         ?.background = animatedVectorDrawable
 

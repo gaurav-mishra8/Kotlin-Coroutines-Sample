@@ -56,7 +56,7 @@ class ImageTransformer(val context: Context) {
   fun getRoundedBitmap(src: Bitmap): RoundedBitmapDrawable {
     val res = context.resources
     val dr = RoundedBitmapDrawableFactory.create(res, src)
-    dr.cornerRadius = Math.max(src.width, src.height) / 2.0f
+    dr.isCircular = true
     return dr
   }
 

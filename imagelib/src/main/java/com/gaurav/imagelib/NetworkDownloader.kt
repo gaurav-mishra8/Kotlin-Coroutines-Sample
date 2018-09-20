@@ -13,7 +13,10 @@ import kotlin.coroutines.experimental.CoroutineContext
 interface NetworkResponseCalback {
   fun onSuccess(byteArray: ByteArray)
 
-  fun onError()
+  fun onError(
+    url: String,
+    exception: Exception
+  )
 }
 
 /**
@@ -22,7 +25,7 @@ interface NetworkResponseCalback {
  */
 class NetworkDownloader {
 
-  fun provideHttpClient() = OkHttpClient()
+  private fun provideHttpClient() = OkHttpClient()
 
   fun loadUrl(
     url: String,
@@ -34,25 +37,30 @@ class NetworkDownloader {
 
     val uiContext: CoroutineContext = UI
 
-    launch(uiContext) {
-      var byteArray: ByteArray? = null
+    try {
 
-      val deferred = async {
-        val response = provideHttpClient().newCall(request)
-            .execute()
-        if (response.isSuccessful) {
-          byteArray = response.body()
-              ?.bytes()
-          return@async byteArray
-        } else {
-          return@async byteArray
+      launch(uiContext) {
+        var byteArray: ByteArray? = null
+
+        val deferred = async {
+          val response = provideHttpClient().newCall(request)
+              .execute()
+          if (response.isSuccessful) {
+            byteArray = response.body()
+                ?.bytes()
+            return@async byteArray
+          } else {
+            return@async byteArray
+          }
         }
+
+        deferred.await()?.let {
+          callback?.onSuccess(it)
+        } ?: callback?.onError(url, ImageLoadException("Error fetching image from url"))
+
       }
-
-      deferred.await()?.let {
-        callback?.onSuccess(it)
-      } ?: callback?.onError()
-
+    } catch (e: Exception) {
+      callback?.onError(url, e)
     }
   }
 

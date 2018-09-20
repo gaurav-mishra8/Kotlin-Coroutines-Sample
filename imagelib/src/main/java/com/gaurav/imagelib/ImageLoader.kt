@@ -8,7 +8,8 @@ import android.support.annotation.DrawableRes
 class ImageLoader private constructor(val context: Context) {
 
   val networkDownloader = NetworkDownloader()
-  val requestHandler = RequestHandler(networkDownloader)
+  val imageTransformer = ImageTransformer(context)
+  val requestHandler = RequestHandler(imageTransformer, networkDownloader)
 
   companion object {
 
@@ -42,9 +43,9 @@ class ImageLoader private constructor(val context: Context) {
 
   fun submitRequest(
     imageLoadRequest: ImageLoadRequest,
-    calback: NetworkResponseCalback?
+    callback: ImageLoadingCallback?
   ) {
-    requestHandler.handleRequest(imageLoadRequest, calback)
+    requestHandler.handleRequest(imageLoadRequest, callback)
   }
 
 }

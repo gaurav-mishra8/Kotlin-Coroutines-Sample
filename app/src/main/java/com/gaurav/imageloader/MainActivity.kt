@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
     tvLoadNext.setOnClickListener {
       ImageLoader.get(this)
           .load(imageUrl)
-          .setPlaceHolder(R.drawable.ic_launcher_background)
           .into(ivAvatar)
     }
 

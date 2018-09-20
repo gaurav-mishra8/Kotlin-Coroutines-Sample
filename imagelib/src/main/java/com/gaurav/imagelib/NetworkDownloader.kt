@@ -10,7 +10,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 /**
  * Interface to provide result of image loading network request
  */
-interface NetworkResponseCalback {
+interface NetworkResponseCallback {
   fun onSuccess(byteArray: ByteArray)
 
   fun onError(
@@ -27,9 +27,14 @@ class NetworkDownloader {
 
   private fun provideHttpClient() = OkHttpClient()
 
+  /**
+   * Make a netwrok request to load image from a url
+   * @param url The url to fetch image from
+   * @param callback Instance of {@link NetworkResponseCallback} to provide result
+   */
   fun loadUrl(
     url: String,
-    callback: NetworkResponseCalback?
+    callback: NetworkResponseCallback?
   ) {
     val request = Request.Builder()
         .url(url)

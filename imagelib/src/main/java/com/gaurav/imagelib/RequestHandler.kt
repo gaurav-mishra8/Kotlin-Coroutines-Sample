@@ -10,17 +10,25 @@ interface ImageLoadingCallback {
   )
 }
 
+/**
+ * This class handles request for fetching an image from either local cache or network
+ */
 class RequestHandler(
   val imageTransformer: ImageTransformer,
   val networkDownloader: NetworkDownloader
 ) {
 
+  /**
+   * Makes a network call using NetworkDownloader and transforms image bitmap
+   * @param imageLoadRequest The request data for fetching image from network
+   * @param callback a callback to send drawable back to listener
+   */
   fun handleRequest(
     imageLoadRequest: ImageLoadRequest,
     callback: ImageLoadingCallback?
   ) {
 
-    networkDownloader.loadUrl(imageLoadRequest.uri.toString(), object : NetworkResponseCalback {
+    networkDownloader.loadUrl(imageLoadRequest.uri.toString(), object : NetworkResponseCallback {
       override fun onSuccess(byteArray: ByteArray) {
         val bitmap = imageTransformer.decodeByteArray(
             byteArray, imageLoadRequest.reqWidth, imageLoadRequest.reqHeight

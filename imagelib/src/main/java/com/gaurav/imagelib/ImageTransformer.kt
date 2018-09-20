@@ -53,6 +53,11 @@ class ImageTransformer(val context: Context) {
 
   }
 
+  /**
+   * Get a rounded bitmap drawable for provided bitmap
+   * @param src The bitmap to be rounded
+   * @return The decoded bitmap or null in case bitmap could not be decoded
+   */
   fun getRoundedBitmap(src: Bitmap): RoundedBitmapDrawable {
     val res = context.resources
     val dr = RoundedBitmapDrawableFactory.create(res, src)
@@ -60,6 +65,14 @@ class ImageTransformer(val context: Context) {
     return dr
   }
 
+  /**
+   * Decodes a byteArray to provide bitmap
+   * @param byteArray The byteArray for decoding a bitmap
+   * @param targetWidth The target width of imageview in which bitmap is to be loaded
+   * @param targetHeight The target height of imageView in which bitmap is to be loaded
+   *
+   * @return The decoded bitmap or null in case bitmap could not be decoded
+   */
   fun decodeByteArray(
     byteArray: ByteArray?,
     targetWidth: Int,
@@ -111,6 +124,12 @@ class ImageTransformer(val context: Context) {
     return BitmapFactory.decodeResource(res, resId, options)
   }
 
+  /**
+   * Calculates optimal samplesize to downsample image if needed
+   * @param options BitmapFactory options to be used for calculating sample size
+   * @param reqWidth The height of imageview that will hold the image
+   * @param reqHeight The height of imageVeiw that will hold the image
+   */
   private fun calculateInSampleSize(
     options: BitmapFactory.Options,
     reqWidth: Int,

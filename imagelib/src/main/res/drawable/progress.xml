@@ -19,11 +19,11 @@
             android:name="progressBar"
             android:fillColor="@android:color/transparent"
             android:pathData="M0,0 m 0,-18 a 18,18 0 1,1 0,36 a 18,18 0 1,1 0,-36"
-            android:strokeColor="#000000"
+            android:strokeColor="#279CF2"
             android:strokeLineCap="square"
             android:strokeLineJoin="miter"
             android:strokeWidth="4"
-            android:trimPathEnd="0.03"
+            android:trimPathEnd="0.5"
             android:trimPathOffset="0"
             android:trimPathStart="0"/>
       </group>
@@ -73,7 +73,7 @@
   <target android:name="progressBarContainer">
     <aapt:attr name="android:animation">
       <objectAnimator
-          android:duration="8888"
+          android:duration="5000"
           android:interpolator="@android:anim/linear_interpolator"
           android:propertyName="rotation"
           android:repeatCount="-1"

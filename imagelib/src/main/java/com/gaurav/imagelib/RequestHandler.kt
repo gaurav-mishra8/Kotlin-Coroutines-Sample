@@ -1,6 +1,9 @@
 package com.gaurav.imagelib
 
+import android.graphics.Bitmap
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 
 interface ImageLoadingCallback {
   fun onLoadingSuccess(drawable: RoundedBitmapDrawable)
@@ -15,6 +18,7 @@ interface ImageLoadingCallback {
  */
 class RequestHandler(
   val imageTransformer: ImageTransformer,
+  val imageCache: ImageCache,
   val networkDownloader: NetworkDownloader
 ) {
 
@@ -27,27 +31,37 @@ class RequestHandler(
     imageLoadRequest: ImageLoadRequest,
     callback: ImageLoadingCallback?
   ) {
+    val url = imageLoadRequest.uri.toString()
+    var bitmap: Bitmap?
 
-    networkDownloader.loadUrl(imageLoadRequest.uri.toString(), object : NetworkResponseCallback {
-      override fun onSuccess(byteArray: ByteArray) {
-        val bitmap = imageTransformer.decodeByteArray(
-            byteArray, imageLoadRequest.reqWidth, imageLoadRequest.reqHeight
-        )
-        bitmap?.let {
-          val roundedBitmap = imageTransformer.getRoundedBitmap(bitmap)
-          callback?.onLoadingSuccess(roundedBitmap)
-        } ?: callback?.onLoadingError(
-            imageLoadRequest.uri.toString(), ImageLoadException("Error generating bitmap drawable")
-        )
+    // try getting bitmap from cache
+    bitmap = imageCache.getImage(url)
+
+    try {
+      // if bitmap not found in cache make netwrok call
+      if (bitmap == null) {
+        launch(UI) {
+          val deferred = networkDownloader.loadUrl(url)
+          val byteArray = deferred.await()
+          bitmap = imageTransformer.decodeByteArray(
+              byteArray, imageLoadRequest.reqWidth, imageLoadRequest.reqHeight
+          )
+
+          bitmap?.let {
+            val roundedBitmap = imageTransformer.getRoundedBitmap(bitmap!!)
+            imageCache.putImage(url, it)
+            callback?.onLoadingSuccess(roundedBitmap)
+          } ?: callback?.onLoadingError(url, ImageLoadException("Error processing bitmap"))
+        }
+      } else {
+        val roundedBitmap = imageTransformer.getRoundedBitmap(bitmap!!)
+        callback?.onLoadingSuccess(roundedBitmap)
       }
 
-      override fun onError(
-        url: String,
-        exception: Exception
-      ) {
-        callback?.onLoadingError(url, exception)
-      }
-    })
+    } catch (e: Exception) {
+      callback?.onLoadingError(url, e)
+    }
+
   }
 
 }

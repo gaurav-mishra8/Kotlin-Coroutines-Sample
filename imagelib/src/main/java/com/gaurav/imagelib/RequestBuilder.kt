@@ -3,9 +3,7 @@ package com.gaurav.imagelib
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build.VERSION_CODES
 import android.support.annotation.DrawableRes
-import android.support.annotation.RequiresApi
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable
@@ -28,9 +26,6 @@ class RequestBuilder(
    * @param placeHolderRes The placeholder drawable to be used
    */
   fun setPlaceHolder(@DrawableRes placeHolderRes: Int): RequestBuilder {
-    if (placeHolderRes == 0) {
-      throw IllegalArgumentException("Invalid Placeholder resource")
-    }
     this.placeHolderRes = placeHolderRes
     return this
   }
@@ -67,12 +62,11 @@ class RequestBuilder(
     }
   }
 
-  @RequiresApi(VERSION_CODES.JELLY_BEAN)
   fun into(imageView: ImageView) {
     targetView = imageView
-    showPlaceHolder()
-
     val imageLoadRequest = createRequest()
+
+    showPlaceHolder()
 
     imageLoader.submitRequest(imageLoadRequest, object : ImageLoadingCallback {
       override fun onLoadingSuccess(drawable: RoundedBitmapDrawable) {
@@ -85,11 +79,11 @@ class RequestBuilder(
         exception: Exception
       ) {
         targetView.setImageResource(R.drawable.ic_error)
+        targetView.background = null
       }
     })
   }
 
-  @RequiresApi(VERSION_CODES.JELLY_BEAN)
   private fun showPlaceHolder() {
     val animatedVectorDrawable =
       AnimatedVectorDrawableCompat.create(imageLoader.context, drawable.progress)
@@ -97,7 +91,11 @@ class RequestBuilder(
 
     val animatable = targetView.background as Animatable
     animatable.start()
-    targetView.setImageResource(drawable.ic_placeholder)
+    if (placeHolderRes != 0) {
+      targetView.setImageResource(placeHolderRes)
+    } else {
+      targetView.setImageResource(drawable.ic_placeholder)
+    }
   }
 
   private fun createRequest(): ImageLoadRequest {

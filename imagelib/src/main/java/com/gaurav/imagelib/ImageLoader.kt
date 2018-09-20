@@ -9,7 +9,9 @@ class ImageLoader private constructor(val context: Context) {
 
   val networkDownloader = NetworkDownloader()
   val imageTransformer = ImageTransformer(context)
-  val requestHandler = RequestHandler(imageTransformer, networkDownloader)
+  val imageCache = InMemoryCache()
+
+  val requestHandler = RequestHandler(imageTransformer, imageCache, networkDownloader)
 
   companion object {
 
